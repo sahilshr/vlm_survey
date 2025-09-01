@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The VLM Landscape: A Visual Survey</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F0F4F8;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .flow-box {
+            border: 2px solid #0077B6;
+            background-color: #ADE8F4;
+            color: #03045E;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .flow-arrow {
+            font-size: 2.5rem;
+            color: #0077B6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0.5rem 0;
+        }
+        .gemini-btn {
+            background-color: #0077B6;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            transition: all 0.2s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .gemini-btn:hover {
+            background-color: #03045E;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.3);
+        }
+        .gemini-response {
+            background-color: #EBF8FF;
+            border-left: 4px solid #0077B6;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            color: #03045E;
+            display: none;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0077B6;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 1rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#03045E] mb-2">The Rise of Vision-Language Models (VLMs)</h1>
+            <p class="text-lg text-[#0077B6]">A visual summary of the survey by Li et al. (2025), exploring the architectures, benchmarks, and challenges shaping the future of AI.</p>
+        </header>
+
+        <section class="bg-white rounded-lg shadow-md p-6 mb-12">
+            <h2 class="text-3xl font-bold text-[#03045E] mb-4 text-center">The Architectural Evolution: From Scratch to LLM Backbones</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">The fundamental design of VLMs has undergone a significant transformation. Early models were built from the ground up, requiring extensive training for both vision and language components. The modern approach leverages the immense power of pre-trained Large Language Models (LLMs), focusing instead on efficiently connecting visual data to these powerful text-based backbones.</p>
+            <div class="grid grid-cols-1 md:grid-cols-5 items-center gap-4">
+                <div class="flow-box">Legacy Approach <br>(e.g., CLIP)</div>
+                <div class="flow-arrow hidden md:flex">➔</div>
+                <div class="flow-arrow flex md:hidden justify-center my-2">↓</div>
+                <div class="flow-box">Separate Vision & Text Encoders</div>
+                <div class="flow-arrow hidden md:flex">➔</div>
+                <div class="flow-arrow flex md:hidden justify-center my-2">↓</div>
+                <div class="flow-box">Modern Approach <br>(e.g., LLaVA)</div>
+                <div class="flow-arrow hidden md:flex">➔</div>
+                <div class="flow-arrow flex md:hidden justify-center my-2">↓</div>
+                <div class="flow-box">Pre-trained LLM Backbone + Vision Encoder</div>
+                 <div class="flow-arrow hidden md:flex">➔</div>
+                <div class="flow-arrow flex md:hidden justify-center my-2">↓</div>
+                <div class="flow-box">Focus on Alignment & Projection</div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <h3 class="text-2xl font-bold text-[#03045E] mb-4">VLM Benchmark Categories</h3>
+                 <p class="text-gray-600 mb-6">Research evaluation has diversified into numerous specialized areas. While general visual reasoning remains the largest category, significant effort is now focused on critical issues like hallucination and the application of VLMs in robotics and agent-based systems.</p>
+                <div class="chart-container h-[400px] md:h-[450px]">
+                    <canvas id="benchmarkCategoriesChart"></canvas>
+                </div>
+                <div class="mt-6">
+                    <button id="explainBenchmarkBtn" class="gemini-btn">✨ Explain This Chart</button>
+                    <div id="benchmarkLoader" class="loader"></div>
+                    <div id="benchmarkResponse" class="gemini-response text-left"></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <h3 class="text-2xl font-bold text-[#03045E] mb-4">Evaluation Formats in Benchmarks</h3>
+                <p class="text-gray-600 mb-6">For ease of automated scoring, the vast majority of benchmarks rely on simple, structured formats. Nearly 45% use a Yes/No format, with multiple-choice questions also being extremely common. This highlights a potential gap in evaluating the nuanced, open-ended reasoning capabilities of advanced VLMs.</p>
+                <div class="chart-container h-[400px] md:h-[450px]">
+                    <canvas id="evaluationFormatsChart"></canvas>
+                </div>
+                 <div class="mt-6">
+                    <button id="explainEvaluationBtn" class="gemini-btn">✨ Explain This Chart</button>
+                    <div id="evaluationLoader" class="loader"></div>
+                    <div id="evaluationResponse" class="gemini-response text-left"></div>
+                </div>
+            </div>
+        </div>
+
+        <section class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-3xl font-bold text-[#03045E] mb-6 text-center">Core Challenges Facing Modern VLMs</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">Despite their rapid advancements, VLMs grapple with fundamental issues that are the focus of ongoing research. These challenges must be overcome to ensure the reliable, ethical, and efficient deployment of this technology.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-[#CAF0F8] p-6 rounded-lg text-center">
+                    <div class="text-4xl mb-2">👻</div>
+                    <h4 class="text-xl font-semibold text-[#03045E]">Hallucination</h4>
+                    <p class="text-gray-700 mt-2">Generating text about objects or details that are not present in the visual input, undermining model reliability.</p>
+                </div>
+                <div class="bg-[#90E0EF] p-6 rounded-lg text-center">
+                    <div class="text-4xl mb-2">⚖️</div>
+                    <h4 class="text-xl font-semibold text-[#03045E]">Fairness & Safety</h4>
+                    <p class="text-gray-700 mt-2">Models can perpetuate societal biases and be vulnerable to "jailbreaking" for malicious use.</p>
+                </div>
+                <div class="bg-[#48CAE4] p-6 rounded-lg text-center">
+                    <div class="text-4xl mb-2">🔗</div>
+                    <h4 class="text-xl font-semibold text-[#03045E]">Alignment</h4>
+                    <p class="text-gray-700 mt-2">Ensuring model outputs align with human values and adhere to commonsense and physical laws.</p>
+                </div>
+                <div class="bg-[#00B4D8] p-6 rounded-lg text-center">
+                    <div class="text-4xl mb-2">💾</div>
+                    <h4 class="text-xl font-semibold text-[#03045E]">Data Scarcity</h4>
+                    <p class="text-gray-700 mt-2">The finite supply of high-quality, large-scale multimodal data poses a bottleneck for future scaling.</p>
+                </div>
+            </div>
+             <div class="mt-8 text-center">
+                <button id="summarizeChallengesBtn" class="gemini-btn">✨ Summarize Challenges</button>
+                <div id="challengesLoader" class="loader"></div>
+                <div id="challengesResponse" class="gemini-response text-left max-w-4xl mx-auto"></div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const brilliantBluesPalette = {
+            background: 'rgba(240, 244, 248, 0.8)',
+            text: '#03045E',
+            colors: ['#00B4D8', '#0077B6', '#03045E', '#90E0EF', '#CAF0F8', '#48CAE4', '#0096C7']
+        };
+
+        function wrapLabel(label) {
+            const maxLength = 16;
+            if (typeof label !== 'string' || label.length <= maxLength) {
+                return label;
+            }
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + ' ' + word).trim().length > maxLength) {
+                    lines.push(currentLine.trim());
+                    currentLine = word;
+                } else {
+                    currentLine = (currentLine + ' ' + word).trim();
+                }
+            }
+            if (currentLine) {
+                lines.push(currentLine.trim());
+            }
+            return lines;
+        }
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+
+        const benchmarkData = {
+            labels: [
+                'Visual reasoning', 'Agents and Robotics', 'Hallucination', 
+                'Commonsense Alignment', 'Multimodal general intelligence', 
+                'Text-to-Image', 'Video understanding', 'Chart understanding', 'OCR', 
+                'Multilingual multimodal', 'Visual math reasoning', 'Visual text understanding', 'World model'
+            ].map(wrapLabel),
+            datasets: [{
+                label: 'Percentage of Datasets (%)',
+                data: [17.4, 15.1, 12.8, 9.3, 7.0, 7.0, 5.8, 4.7, 4.7, 4.7, 3.5, 2.3, 5.8],
+                backgroundColor: brilliantBluesPalette.colors,
+                borderColor: brilliantBluesPalette.background,
+                borderWidth: 2
+            }]
+        };
+
+        const evaluationData = {
+            labels: ['Yes/No', 'Multiple Choice', 'Answer Matching', 'Image-Text Alignment Score'],
+            datasets: [{
+                label: 'Usage in Benchmarks (%)',
+                data: [44.8, 29.9, 19.4, 6.0],
+                backgroundColor: [brilliantBluesPalette.colors[0], brilliantBluesPalette.colors[1], brilliantBluesPalette.colors[3], brilliantBluesPalette.colors[5]],
+                borderColor: brilliantBluesPalette.background,
+                borderWidth: 2
+            }]
+        };
+
+        const chartOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    },
+                    backgroundColor: 'rgba(3, 4, 94, 0.9)',
+                    titleFont: { size: 14, weight: 'bold' },
+                    bodyFont: { size: 12 },
+                    padding: 12,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#E0E7FF'
+                    },
+                    ticks: {
+                        color: brilliantBluesPalette.text,
+                        font: {
+                            weight: '600'
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: brilliantBluesPalette.text,
+                        font: {
+                            weight: '600'
+                        }
+                    }
+                }
+            }
+        };
+
+        const pieChartOptions = {
+             maintainAspectRatio: false,
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: brilliantBluesPalette.text,
+                        font: {
+                            size: 14,
+                            weight: '600'
+                        },
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    },
+                     backgroundColor: 'rgba(3, 4, 94, 0.9)',
+                    titleFont: { size: 14, weight: 'bold' },
+                    bodyFont: { size: 12 },
+                    padding: 12,
+                    cornerRadius: 8
+                }
+            }
+        };
+
+        new Chart(document.getElementById('benchmarkCategoriesChart'), {
+            type: 'bar',
+            data: benchmarkData,
+            options: chartOptions
+        });
+
+        new Chart(document.getElementById('evaluationFormatsChart'), {
+            type: 'doughnut',
+            data: evaluationData,
+            options: pieChartOptions
+        });
+        
+        const apiKey = "";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+        async function callGeminiAPI(prompt, loaderId, responseId) {
+            const loader = document.getElementById(loaderId);
+            const responseContainer = document.getElementById(responseId);
+
+            loader.style.display = 'block';
+            responseContainer.style.display = 'none';
+            responseContainer.textContent = '';
+
+            try {
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (text) {
+                    responseContainer.textContent = text;
+                    responseContainer.style.display = 'block';
+                } else {
+                    throw new Error('No content received from API.');
+                }
+
+            } catch (error) {
+                console.error("Gemini API call failed:", error);
+                responseContainer.textContent = 'Sorry, something went wrong. Please try again.';
+                responseContainer.style.display = 'block';
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        document.getElementById('explainBenchmarkBtn').addEventListener('click', () => {
+            const prompt = `As a data analyst, explain the key insights from this bar chart on VLM Benchmark Categories. The data is: ${JSON.stringify(benchmarkData.datasets[0].data)} with corresponding labels: ${JSON.stringify(benchmarkData.labels.map(l => Array.isArray(l) ? l.join(' ') : l))}. Focus on the top 3 categories and what this distribution implies about the focus of VLM research.`;
+            callGeminiAPI(prompt, 'benchmarkLoader', 'benchmarkResponse');
+        });
+
+        document.getElementById('explainEvaluationBtn').addEventListener('click', () => {
+            const prompt = `As a data visualization expert, interpret this doughnut chart on VLM Evaluation Formats. The data is: ${JSON.stringify(evaluationData.datasets[0].data)} for the labels: ${JSON.stringify(evaluationData.labels)}. Explain why simple formats like 'Yes/No' and 'Multiple Choice' are so dominant and what limitations this presents for evaluating true AI capabilities.`;
+            callGeminiAPI(prompt, 'evaluationLoader', 'evaluationResponse');
+        });
+
+        document.getElementById('summarizeChallengesBtn').addEventListener('click', () => {
+            const prompt = `You are an AI research analyst. Based on these four key challenges in VLM development (Hallucination, Fairness & Safety, Alignment, Data Scarcity), provide a concise, one-paragraph summary of the primary obstacles researchers are currently facing to build reliable and ethical models.`;
+            callGeminiAPI(prompt, 'challengesLoader', 'challengesResponse');
+        });
+
+    </script>
+</body>
+</html>
